@@ -1,5 +1,6 @@
 ﻿using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
+using System.Globalization;
 
 namespace SensorNotifications.Models;
 
@@ -18,7 +19,21 @@ public class NotificationRule
     public string Operator { get; set; }
     [BsonElement("value")]
     public double Value { get; set; }
-    [BsonIgnore]
-    [BsonElement("notifications")]
-    public List<Notification> Notifications { get; set; }
+    [BsonElement("activatedFor")]
+    public List<string> ActivatedFor { get; set; }
+
+    public bool Triggers(double value)
+    {
+        return Operator switch
+        {
+            "<" => value < Value,
+            ">" => value > Value,
+            _ => throw new ArgumentException($"Unknown operator: {Operator}"),
+        };
+    }
+
+    public string GetMessage(SensorMeasurements measurements)
+    {
+        return $"{Name}.Sensor {measurements.SensorId} has {Measurement} {Operator} {Value}";
+    }
 }

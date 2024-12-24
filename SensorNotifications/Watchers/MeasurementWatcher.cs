@@ -1,6 +1,9 @@
-﻿using MongoDB.Driver;
+﻿using MongoDB.Bson;
+using MongoDB.Driver;
 using SensorNotifications.Data;
+using SensorNotifications.Helpers;
 using SensorNotifications.Models;
+using SensorNotifications.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,38 +15,58 @@ namespace SensorNotifications.Watchers;
 public class MeasurementWatcher : BackgroundService
 {
     private readonly ILogger<MeasurementWatcher> _logger;
-    private readonly RuleCache _ruleCache;
     private readonly MongoDb _db;
+    private readonly NotificationService _notificationService;
 
-    public MeasurementWatcher(ILogger<MeasurementWatcher> logger, RuleCache ruleCache, MongoDb db)
+    public MeasurementWatcher(ILogger<MeasurementWatcher> logger, MongoDb db, NotificationService notificationService)
     {
         _logger = logger;
-        _ruleCache = ruleCache;
         _db = db;
+        _notificationService = notificationService;
     }
-    public override async Task StartAsync(CancellationToken cancellationToken)
-    {
-        await base.StartAsync(cancellationToken);
-    }
+
     /// <summary>
     /// Start watching for measurements.
     /// </summary>
     protected override async Task ExecuteAsync(CancellationToken cancellationToken)
     {
+        _logger.LogInformation("Executing measurement watcher.");
+
         var col = _db.SensorMeasurements;
-        var options = new ChangeStreamOptions { FullDocument = ChangeStreamFullDocumentOption.UpdateLookup };
+        var options = new ChangeStreamOptions { FullDocument = ChangeStreamFullDocumentOption.UpdateLookup }; // Get the full document on change
         var pipeline = new EmptyPipelineDefinition<ChangeStreamDocument<SensorMeasurements>>()
-            .Match("{ operationType: { $in: [ 'insert', 'update', 'replace', 'delete' ] } }");
+            .Match(change => change.OperationType == ChangeStreamOperationType.Insert); // Only watch for insert operations
+
         while (!cancellationToken.IsCancellationRequested)
         {
             try
             {
-                using var cursor = await col.WatchAsync(pipeline, options);
+                _logger.LogInformation("Watching for measurements.");
+
+                using var cursor = await col.WatchAsync(pipeline, options); // Watch for changes
+
+                await cursor.ForEachAsync(async change =>
+                {
+                    var measurements = change.FullDocument;
+                    _logger.LogInformation("Measurement insertion detected: {Change}.", measurements.ToJsonString());
+                    await _notificationService.HandleMeasurement(measurements); // Handle the measurement
+
+                }, cancellationToken);
             }
             catch (OperationCanceledException)
             {
-                break;
+                _logger.LogInformation("Measurement watcher stopped.");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error watching for measurements.");
             }
         }
+    }
+
+    public override async Task StopAsync(CancellationToken cancellationToken)
+    {
+        _logger.LogInformation("Stopping measurement watcher.");
+        await base.StopAsync(cancellationToken);
     }
 }
