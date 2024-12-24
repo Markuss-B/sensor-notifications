@@ -19,8 +19,6 @@ public class NotificationRule
     public string Operator { get; set; }
     [BsonElement("value")]
     public double Value { get; set; }
-    [BsonElement("activatedFor")]
-    public List<string> ActivatedFor { get; set; }
 
     public bool Triggers(double value)
     {
@@ -34,6 +32,6 @@ public class NotificationRule
 
     public string GetMessage(SensorMeasurements measurements)
     {
-        return $"{Name}.Sensor {measurements.SensorId} has {Measurement} {Operator} {Value}";
+        return $"{Name}.Sensors {measurements.SensorId}: {Measurement} {Operator} {Value}";
     }
 }

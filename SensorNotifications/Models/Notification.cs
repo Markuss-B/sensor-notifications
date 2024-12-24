@@ -17,5 +17,6 @@ public class Notification
     [BsonDefaultValue(null)]
     public DateTime? EndTimestamp { get; set; }
     [BsonElement("ruleId")]
+    [BsonRepresentation(BsonType.ObjectId)]
     public string RuleId { get; set; }
 }

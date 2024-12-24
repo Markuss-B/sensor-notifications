@@ -81,9 +81,13 @@ public class NotificationService
                     .SortByDescending(n => n.StartTimestamp)
                     .ToList();
 
-                if (notifications.Count != 1)
+                if (notifications.Count > 1)
                 {
                     _logger.LogWarning("Unexpected number of notifications: {Count}.", notifications.Count);
+                    continue;
+                } else if (notifications.Count == 0)
+                {
+                    _logger.LogDebug("No notifications to clear found.");
                     continue;
                 }
 
