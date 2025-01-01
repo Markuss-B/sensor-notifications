@@ -51,7 +51,7 @@ public class NotificationService
 
             if (triggers)
             {
-                _logger.LogInformation("Rule triggered: {Rule}, Measurement: {Measurement}.", rule.ToJsonString(), measurements.ToJsonString());
+                _logger.LogDebug("Rule triggered: {Rule}, Measurement: {Measurement}.", rule.ToJsonString(), measurements.ToJsonString());
                 // find matching notifications by sensorId and ruleId which does not have a endTimestamp
                 var notifications = _db.Notifications
                     .Find(n => n.SensorId == sensorMeasurements.SensorId && n.RuleId == rule.Id && n.EndTimestamp == null)
