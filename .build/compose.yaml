@@ -1,0 +1,15 @@
+name: sensor
+
+services:
+  sensor-notifications-dev:
+    build: ../  
+    networks:
+      - sensor-network
+    container_name: sensor-notifications-dev
+    environment:
+      MongoDbSettings__ConnectionString: mongodb://sensor-mongo-dev:27017/?directConnection=true
+      MongoDbSettings__DatabaseName: sensor-dev
+
+networks:
+  sensor-network:
+    external: true
