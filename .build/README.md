@@ -1,10 +1,6 @@
 # To run with docker compose
 
-Build image in sensor-notifications project main directory.
-```
-docker build -t sensor-notifications-dev .
-```
-Modify the `compose.yaml` file to set used database.
+Optional: modify the `compose.yaml` file to set used database. By default uses the db creaated by sensor-consumer compose file.
 
 Run the docker compose file in the main directory.
 ```
