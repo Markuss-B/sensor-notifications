@@ -32,7 +32,7 @@ public class NotificationService
 
         foreach (var rule in rules)
         {
-            // try get the measurement
+            // try get the rule measurement from the measurements
             if (!measurements.TryGetValue(rule.Measurement, out var value))
             {
                 _logger.LogWarning("Measurement not found: {Measurement}.", rule.Measurement);
