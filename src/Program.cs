@@ -1,4 +1,3 @@
-using SensorNotifications;
 using SensorNotifications.Data;
 using SensorNotifications.Models;
 using SensorNotifications.Services;

@@ -31,4 +31,3 @@ public class SensorMeasurements
 //    [BsonElement("measurements")]
 //    public Measurements Measurements { get; set; } // Measurements from the sensor
 //}
-

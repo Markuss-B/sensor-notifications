@@ -2,12 +2,7 @@
 using SensorNotifications.Data;
 using SensorNotifications.Helpers;
 using SensorNotifications.Models;
-using System;
-using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SensorNotifications.Services;
 
@@ -85,7 +80,8 @@ public class NotificationService
                 {
                     _logger.LogWarning("Unexpected number of notifications: {Count}.", notifications.Count);
                     continue;
-                } else if (notifications.Count == 0)
+                }
+                else if (notifications.Count == 0)
                 {
                     _logger.LogDebug("No notifications to clear found.");
                     continue;
