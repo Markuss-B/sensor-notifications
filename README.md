@@ -1,5 +1,7 @@
 # SensorNotifications
 
+Generates notifications
+
 ## Part of Sensor Monitoring System
 - [sensor-consumer](https://github.com/Markuss-B/sensor-consumer)
 - [sensor-webapi](https://github.com/Markuss-B/sensor-webapi)
